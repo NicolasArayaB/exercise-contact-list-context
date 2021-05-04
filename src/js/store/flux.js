@@ -2,11 +2,13 @@ const getState = ({ getStore, setStore }) => {
 	return {
 		store: {
 			//Your data structures, A.K.A Entities
-			contactsList: []
+			agenda: [],
+			contact: {}
 		},
 		actions: {
 			//(Arrow) Functions that update the Store
 			// Remember to use the scope: scope.state.store & scope.setState()
+
 			getAgenda: async () => {
 				const settings = {
 					method: "GET",
@@ -21,17 +23,20 @@ const getState = ({ getStore, setStore }) => {
 			},
 
 			// Get a particular contact by id.
-			getContact: async id => {
+			getContact: async (id, setName, setEmail, setPhone, setAddress) => {
 				const settings = {
 					method: "GET",
 					headers: { "Content-Type": "application/json" }
 				};
 
-				const request = await fetch(`https://assets.breatheco.de/apis/fake/contact${id}`, settings);
-				const json = await request.json;
-				const data = json;
-				console.log(data, "<--- get contact");
-				setStore({ contact: data });
+				const request = await fetch(`https://assets.breatheco.de/apis/fake/contact/${id}`, settings);
+				const json = await request.json();
+				console.log(json, "<--- get contact");
+				setStore({ contact: json });
+				setName(json.full_name);
+				setEmail(json.email);
+				setPhone(json.phone);
+				setAddress(json.address);
 			},
 
 			// delete 1 particular contact by id
@@ -54,43 +59,40 @@ const getState = ({ getStore, setStore }) => {
 				console.log(data, "<--- delete agenda");
 			},
 
-			createContact: async info => {
-				console.log(info);
+			addContact: async (name, email, phone, address) => {
 				const settings = {
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
-					body: {
-						full_name: "Dave Bradley",
-						email: "dave@gmail.com",
-						agenda_slug: "nico",
-						address: "47568 NW 34ST, 33434 FL, USA",
-						phone: "7864445566"
-					}
+					body: JSON.stringify({
+						full_name: name,
+						email: email,
+						phone: phone,
+						address: address,
+						agenda_slug: "nico"
+					})
 				};
-
 				const request = await fetch("https://assets.breatheco.de/apis/fake/contact/", settings);
-				const json = await request.json;
-				const data = json;
-				console.log(data, "<--- create contact");
+				const json = await request.json();
+				console.log(json, "<--- create contact");
 			},
 
 			// update contact info
-			updateContact: async id => {
+			updateContact: async (id, name, email, phone, address) => {
 				const settings = {
 					method: "PUT",
 					headers: { "Content-Type": "application/json" },
-					body: {
-						full_name: "Dave Bradley",
-						email: "dave@gmail.com",
-						agenda_slug: "nico",
-						address: "47568 NW 34ST, 33434 FL, USA",
-						phone: "7864445566"
-					}
+					body: JSON.stringify({
+						full_name: name,
+						email: email,
+						phone: phone,
+						address: address,
+						agenda_slug: "nico"
+					})
 				};
 				const request = await fetch(`https://assets.breatheco.de/apis/fake/contact/${id}`, settings);
 				const json = await request.json();
 				const data = json;
-				console.log(data, "<--- update contact");
+				console.log(data, "<--- update contact", json);
 			}
 		}
 	};
